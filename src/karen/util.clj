@@ -1,7 +1,7 @@
 (ns karen.util
   (:require [schema.core :as s]))
 
-(def ReturnedDecision [(s/cond-pre s/Keyword {s/Keyword s/Any})])
+(def ReturnedDecision [(s/cond-pre s/Bool {s/Keyword s/Any})])
 
 (s/defn yes :- ReturnedDecision
   ([m :- {s/Keyword s/Any}]
