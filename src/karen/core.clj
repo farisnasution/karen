@@ -45,7 +45,7 @@
                    (if (roles-sufficient? roles user-roles)
                      (ku/yes)
                      (ku/no {:error (not-allowed-message user-roles)})))))
-   :handle-forbidden ku/return-error-message})
+   :handle-forbidden ku/->error-message})
 
 (s/defn malform-body-check :- ReturnedConfig
   [get-body-fn   :- c/Fn
@@ -56,7 +56,7 @@
                    (if error
                      (ku/yes {:error error})
                      (ku/no {:body body}))))
-   :handle-malformed ku/return-error-message})
+   :handle-malformed ku/->error-message})
 
 (s/defn exists-check :- ReturnedConfig
   [entity-fn :- c/Fn]
@@ -65,7 +65,7 @@
               (if-let [entity (entity-fn ctx)]
                 (ku/yes {:entity entity})
                 (ku/no {:error "entity not found"})))
-   :handle-not-found ku/return-error-message})
+   :handle-not-found ku/->error-message})
 
 (s/def ->post-config :- ReturnedConfig
   {:post-redirect? false
