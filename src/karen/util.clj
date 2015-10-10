@@ -1,5 +1,6 @@
 (ns karen.util
-  (:require [schema.core :as s]))
+  (:require [schema.core :as s]
+            [cljc.susumu.core :as c]))
 
 (def ReturnedDecision [(s/cond-pre s/Bool {s/Keyword s/Any})])
 
@@ -45,7 +46,7 @@
   [v :- ReturnedDecision]
   (second v))
 
-(s/defn return-error-message :- {s/Keyword s/Str}
+(s/defn ->error-message :- {s/Keyword s/Str}
   [ctx :- {:error s/Any}]
   {:message (:error ctx)})
 
