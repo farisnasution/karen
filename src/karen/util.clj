@@ -15,6 +15,24 @@
   ([]
    (no {})))
 
+(s/defn method= :- s/Bool
+  [method :- (s/enum :get :post :put :delete)
+   ctx    :- {s/Keyword s/Any}]
+  (let [current-method (get-in ctx [:request :request-method])]
+    (= method current-method)))
+
+(s/def get? :- c/Fn
+  (partial method= :get))
+
+(s/def post? :- c/Fn
+  (partial method= :post))
+
+(s/def put? :- c/Fn
+  (partial method= :put))
+
+(s/def delete? :- c/Fn
+  (partial method= :delete))
+
 (s/defn yes? :- s/Bool
   [v :- ReturnedDecision]
   (true? (first v)))
