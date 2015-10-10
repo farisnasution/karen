@@ -1,4 +1,4 @@
-(ns karen.config
+(ns karen.core
   (:require [schema.core :as s]
             [karen.util :as ku]
             [clojure.string :as string]
