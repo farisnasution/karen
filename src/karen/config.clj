@@ -1,8 +1,8 @@
 (ns karen.config
   (:require [schema.core :as s]
-            [karen.util :as ru]
+            [karen.util :as ku]
             [clojure.string :as string]
-            [cljc.susumu.util :as u]))
+            [cljc.susumu.core :as c]))
 
 (def ReturnedConfig {s/Keyword s/Any})
 
@@ -20,7 +20,7 @@
    :allowed-methods methods})
 
 (s/defn unauthenticated-only :- ReturnedConfig
-  [auth-fn :- u/Fn]
+  [auth-fn :- c/Fn]
   {:authorized? auth-fn
    :handle-unauthorized {:message "unauthenticated only"}})
 
@@ -30,11 +30,11 @@
 
 (s/defn roles-sufficient? :- s/Bool
   [roles-allowed user-roles]
-  (boolean (some #(u/in roles-allowed %) user-roles)))
+  (boolean (some #(c/in roles-allowed %) user-roles)))
 
 (s/defn authenticated-only :- ReturnedConfig
-  [auth-fn :- u/Fn
-   & [get-roles-fn :- u/Fn
+  [auth-fn :- c/Fn
+   & [get-roles-fn :- c/Fn
       roles        :- [s/Keyword]]]
   {:authorized? auth-fn
    :handle-unauthorized {:message "authenticated only"}
@@ -48,8 +48,8 @@
    :handle-forbidden ku/return-error-message})
 
 (s/defn malform-body-check :- ReturnedConfig
-  [get-body-fn   :- u/Fn
-   validation-fn :- u/Fn]
+  [get-body-fn   :- c/Fn
+   validation-fn :- c/Fn]
   {:malformed? (fn [ctx]
                  (let [body (get-body-fn ctx)
                        error (validation-fn body)]
@@ -59,7 +59,7 @@
    :handle-malformed ku/return-error-message})
 
 (s/defn exists-check :- ReturnedConfig
-  [entity-fn :- u/Fn]
+  [entity-fn :- c/Fn]
   {:handle-ok :entity
    :exists? (fn [ctx]
               (if-let [entity (entity-fn ctx)]
@@ -67,19 +67,19 @@
                 (ku/no {:error "entity not found"})))
    :handle-not-found ku/return-error-message})
 
-(s/def post-with-entity-config :- ReturnedConfig
+(s/def ->post-config :- ReturnedConfig
   {:post-redirect? false
    :new? true
    :handle-created :entity})
 
-(s/def put-with-entity-config :- ReturnedConfig
+(s/def ->put-config :- ReturnedConfig
   {:can-put-to-missing? false
    :new? false
    :respond-with-entity? true
    :multiple-representations? false
    :handle-ok :entity})
 
-(s/def delete-with-entity-config :- ReturnedConfig
+(s/def ->delete-config :- ReturnedConfig
   {:delete-enacted? true
    :respond-with-entity? true
    :multiple-representations? false
